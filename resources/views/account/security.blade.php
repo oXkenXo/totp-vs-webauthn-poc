@@ -59,6 +59,7 @@
     </div>
 
     <script src="{{ asset('js/webauthn.js') }}"></script>
+    <script src="{{ asset('js/passkey-error.js') }}"></script>
     <script>
         const regBtn = document.getElementById('passkey-register');
         const regStatus = document.getElementById('passkey-register-status');
@@ -76,7 +77,7 @@
                 window.location.reload();
             } catch (e) {
                 console.error(e);
-                regStatus.textContent = 'Gagal mendaftarkan passkey atau dibatalkan.';
+                regStatus.textContent = 'Gagal mendaftarkan passkey. ' + await describePasskeyError(e);
             }
         });
     </script>

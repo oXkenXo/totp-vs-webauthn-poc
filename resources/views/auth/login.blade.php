@@ -44,6 +44,7 @@
     </div>
 
     <script src="{{ asset('js/webauthn.js') }}"></script>
+    <script src="{{ asset('js/passkey-error.js') }}"></script>
     <script>
         const statusEl = document.getElementById('passkey-status');
         const btn = document.getElementById('passkey-login');
@@ -67,7 +68,7 @@
                 window.location.href = "{{ route('dashboard') }}";
             } catch (e) {
                 console.error(e);
-                statusEl.textContent = 'Login dengan passkey gagal atau dibatalkan.';
+                statusEl.textContent = 'Login dengan passkey gagal. ' + await describePasskeyError(e);
             }
         });
     </script>

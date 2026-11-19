@@ -34,13 +34,17 @@ class TotpController extends Controller
 
         $secret = Session::get('totp_setup_secret');
 
-        if (! $secret || ! $totp->verify($secret, $request->string('code')->toString())) {
+        $timestep = $secret ? $totp->verifyNewer($secret, $request->string('code')->toString(), null) : null;
+
+        if ($timestep === null) {
             return back()->withErrors(['code' => 'Kode TOTP salah. Pastikan waktu di HP kamu sinkron, lalu coba lagi.']);
         }
 
+        // Recording the setup code's time-step stops it from also being accepted at the next login.
         $request->user()->update([
             'totp_secret' => $secret,
             'totp_enabled' => true,
+            'totp_last_timestep' => $timestep,
         ]);
 
         Session::forget('totp_setup_secret');
@@ -55,6 +59,7 @@ class TotpController extends Controller
         $request->user()->update([
             'totp_secret' => null,
             'totp_enabled' => false,
+            'totp_last_timestep' => null,
         ]);
 
         return redirect()->route('account.security')->with('status', 'TOTP dinonaktifkan.');

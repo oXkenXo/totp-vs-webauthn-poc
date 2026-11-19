@@ -18,7 +18,9 @@ class WebAuthnLoginController
      */
     public function options(AssertionRequest $request): Responsable
     {
-        return $request->toVerify($request->validate(['email' => 'sometimes|email|string']));
+        return $request
+            ->secureLogin()
+            ->toVerify($request->validate(['email' => 'sometimes|email|string']));
     }
 
     /**

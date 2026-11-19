@@ -1,4 +1,6 @@
 <x-layout title="Login">
+    @include('partials.research-warning')
+
     <div class="mx-auto max-w-md rounded-lg border bg-white p-6 shadow-sm">
         <h1 class="mb-1 text-lg font-semibold text-red-700">Masuk ke iGRACIAS</h1>
         <p class="mb-6 text-sm text-gray-500">Pilih metode login: password (+TOTP bila aktif), atau Passkey (FIDO2/WebAuthn) tanpa password sama sekali.</p>

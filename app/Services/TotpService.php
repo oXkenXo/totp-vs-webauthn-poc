@@ -31,8 +31,14 @@ class TotpService
         return (new Writer($renderer))->writeString($otpauthUri);
     }
 
-    public function verify(string $secret, string $code): bool
+    /**
+     * Returns the matched time-step, or null when the code is wrong or its time-step was already used.
+     */
+    public function verifyNewer(string $secret, string $code, ?int $lastUsedTimestep): ?int
     {
-        return $this->google2fa->verifyKey($secret, $code) !== false;
+        // google2fa only returns the time-step (instead of true) when given a previous one, so 0 stands in for "never".
+        $timestep = $this->google2fa->verifyKeyNewer($secret, $code, $lastUsedTimestep ?? 0);
+
+        return $timestep === false ? null : (int) $timestep;
     }
 }

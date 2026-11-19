@@ -16,10 +16,9 @@ class WebAuthnRegisterController
      */
     public function options(AttestationRequest $request): Responsable
     {
+        // Require PIN/biometric so a passkey is two factors, like password + TOTP.
         return $request
-            ->fastRegistration()
-//            ->userless()
-//            ->allowDuplicates()
+            ->secureRegistration()
             ->toCreate();
     }
 

@@ -70,11 +70,15 @@ class LoginController extends Controller
             return redirect()->route('login');
         }
 
-        if (! $totp->verify($user->totp_secret, $request->string('code')->toString())) {
+        $timestep = $totp->verifyNewer($user->totp_secret, $request->string('code')->toString(), $user->totp_last_timestep);
+
+        if ($timestep === null) {
             AuthLog::record($request, 'totp', 'failed', $user);
 
-            return back()->withErrors(['code' => 'Kode TOTP salah atau sudah kedaluwarsa.']);
+            return back()->withErrors(['code' => 'Kode TOTP salah, kedaluwarsa, atau sudah pernah dipakai.']);
         }
+
+        $user->update(['totp_last_timestep' => $timestep]);
 
         Session::forget('totp_pending_user_id');
         Auth::login($user);

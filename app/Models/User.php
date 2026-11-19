@@ -13,8 +13,8 @@ use Illuminate\Notifications\Notifiable;
 use Laragear\WebAuthn\Contracts\WebAuthnAuthenticatable;
 use Laragear\WebAuthn\WebAuthnAuthentication;
 
-#[Fillable(['name', 'email', 'password', 'nim', 'prodi', 'kelas', 'totp_secret', 'totp_enabled'])]
-#[Hidden(['password', 'remember_token', 'totp_secret'])]
+#[Fillable(['name', 'email', 'password', 'nim', 'prodi', 'kelas', 'totp_secret', 'totp_enabled', 'totp_last_timestep'])]
+#[Hidden(['password', 'remember_token', 'totp_secret', 'totp_last_timestep'])]
 class User extends Authenticatable implements WebAuthnAuthenticatable
 {
     /** @use HasFactory<UserFactory> */
@@ -36,6 +36,8 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'totp_enabled' => 'boolean',
+            'totp_secret' => 'encrypted',
+            'totp_last_timestep' => 'integer',
         ];
     }
 }

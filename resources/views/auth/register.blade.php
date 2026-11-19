@@ -1,4 +1,6 @@
 <x-layout title="Daftar Akun">
+    @include('partials.research-warning')
+
     <div class="mx-auto max-w-md rounded-lg border bg-white p-6 shadow-sm">
         <h1 class="mb-1 text-lg font-semibold text-red-700">Daftar Akun Mahasiswa</h1>
         <p class="mb-6 text-sm text-gray-500">Akun ini nantinya bisa login pakai password biasa, TOTP, atau Passkey (FIDO2/WebAuthn) &mdash; diaktifkan dari menu Keamanan Akun setelah masuk.</p>

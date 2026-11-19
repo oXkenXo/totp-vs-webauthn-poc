@@ -13,7 +13,7 @@ use Illuminate\Notifications\Notifiable;
 use Laragear\WebAuthn\Contracts\WebAuthnAuthenticatable;
 use Laragear\WebAuthn\WebAuthnAuthentication;
 
-#[Fillable(['name', 'email', 'password', 'nim', 'prodi', 'kelas', 'totp_secret', 'totp_enabled', 'totp_last_timestep'])]
+#[Fillable(['name', 'email', 'password', 'nim', 'prodi', 'kelas', 'totp_secret', 'totp_enabled'])]
 #[Hidden(['password', 'remember_token', 'totp_secret', 'totp_last_timestep'])]
 class User extends Authenticatable implements WebAuthnAuthenticatable
 {

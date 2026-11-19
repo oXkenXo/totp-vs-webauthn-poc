@@ -44,6 +44,27 @@ class TotpLoginTest extends TestCase
         $this->assertDatabaseHas('auth_logs', ['user_id' => $user->id, 'method' => 'totp', 'status' => 'failed']);
     }
 
+    public function test_enabling_totp_persists_secret_and_blocks_reusing_the_setup_code(): void
+    {
+        $user = User::factory()->create(['password' => 'secret-password-123']);
+        $code = $this->currentCode();
+
+        $this->actingAs($user)
+            ->withSession(['totp_setup_secret' => self::SECRET])
+            ->post(route('account.totp.enable'), ['code' => $code])
+            ->assertRedirect(route('account.security'));
+
+        $user->refresh();
+        $this->assertTrue($user->totp_enabled);
+        $this->assertSame(self::SECRET, $user->totp_secret);
+        $this->assertNotNull($user->totp_last_timestep);
+
+        $this->post(route('logout'));
+        $this->passPasswordStep($user);
+        $this->post(route('login.totp.verify'), ['code' => $code])->assertSessionHasErrors('code');
+        $this->assertGuest();
+    }
+
     public function test_totp_secret_is_encrypted_at_rest(): void
     {
         $user = $this->userWithTotp();
@@ -57,6 +78,7 @@ class TotpLoginTest extends TestCase
 
     public function test_totp_guessing_is_rate_limited(): void
     {
+        $this->freezeTime();
         $user = $this->userWithTotp();
         $this->passPasswordStep($user);
 

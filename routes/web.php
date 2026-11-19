@@ -23,7 +23,7 @@ Route::middleware('guest')->group(function () {
     Route::post('login/totp', [LoginController::class, 'verifyTotp'])->middleware('throttle:totp')->name('login.totp.verify');
 
     // Passwordless WebAuthn/passkey login challenge + verification (guest-accessible by design).
-    Route::post('webauthn/login/options', [WebAuthnLoginController::class, 'options'])->name('webauthn.login.options');
+    Route::post('webauthn/login/options', [WebAuthnLoginController::class, 'options'])->middleware('throttle:passkey-login')->name('webauthn.login.options');
     Route::post('webauthn/login', [WebAuthnLoginController::class, 'login'])->middleware('throttle:passkey-login')->name('webauthn.login');
 });
 

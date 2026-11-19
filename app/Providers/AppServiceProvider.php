@@ -43,9 +43,10 @@ class AppServiceProvider extends ServiceProvider
                 ->withErrors(['code' => $tooMany($headers)])));
 
         // Passkey assertions cannot be guessed, so this only curbs abuse; it stays looser because
-        // research participants on one campus network share a single public IP.
+        // research participants on one campus network share a single public IP. Each route gets its
+        // own bucket so fetching options does not eat into the login attempts.
         RateLimiter::for('passkey-login', fn (Request $request) => Limit::perMinute(10)
-            ->by('passkey|'.$request->ip())
+            ->by('passkey|'.$request->route()?->getName().'|'.$request->ip())
             ->response(fn (Request $request, array $headers) => response()
                 ->json(['message' => $tooMany($headers)], 429, $headers)));
     }

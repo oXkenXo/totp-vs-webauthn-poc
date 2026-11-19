@@ -12,6 +12,7 @@ class LoginSecurityTest extends TestCase
 
     public function test_password_login_is_rate_limited_per_email(): void
     {
+        $this->freezeTime();
         $user = User::factory()->create(['password' => 'secret-password-123']);
 
         foreach (range(1, 5) as $attempt) {
@@ -26,6 +27,8 @@ class LoginSecurityTest extends TestCase
 
     public function test_passkey_login_is_rate_limited_with_a_json_message(): void
     {
+        $this->freezeTime();
+
         foreach (range(1, 10) as $attempt) {
             $this->postJson(route('webauthn.login'), []);
         }
@@ -33,6 +36,25 @@ class LoginSecurityTest extends TestCase
         $this->postJson(route('webauthn.login'), [])
             ->assertStatus(429)
             ->assertJson(['message' => 'Terlalu banyak percobaan. Coba lagi dalam 60 detik.']);
+    }
+
+    public function test_passkey_options_are_rate_limited_separately_from_passkey_login(): void
+    {
+        foreach (range(1, 10) as $attempt) {
+            $this->postJson(route('webauthn.login.options'))->assertOk();
+        }
+
+        $this->postJson(route('webauthn.login.options'))->assertStatus(429);
+        $this->postJson(route('webauthn.login'), [])->assertStatus(422);
+    }
+
+    public function test_totp_last_timestep_cannot_be_mass_assigned(): void
+    {
+        $user = User::factory()->create();
+
+        $user->fill(['totp_last_timestep' => 999])->save();
+
+        $this->assertNull($user->fresh()->totp_last_timestep);
     }
 
     public function test_passkey_options_require_user_verification(): void

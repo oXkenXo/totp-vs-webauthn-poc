@@ -78,7 +78,7 @@ class LoginController extends Controller
             return back()->withErrors(['code' => 'Kode TOTP salah, kedaluwarsa, atau sudah pernah dipakai.']);
         }
 
-        $user->update(['totp_last_timestep' => $timestep]);
+        $user->forceFill(['totp_last_timestep' => $timestep])->save();
 
         Session::forget('totp_pending_user_id');
         Auth::login($user);

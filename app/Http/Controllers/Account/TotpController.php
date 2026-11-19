@@ -41,11 +41,11 @@ class TotpController extends Controller
         }
 
         // Recording the setup code's time-step stops it from also being accepted at the next login.
-        $request->user()->update([
+        $request->user()->forceFill([
             'totp_secret' => $secret,
             'totp_enabled' => true,
             'totp_last_timestep' => $timestep,
-        ]);
+        ])->save();
 
         Session::forget('totp_setup_secret');
 
@@ -56,11 +56,11 @@ class TotpController extends Controller
     {
         $request->validate(['password' => ['required', 'current_password']]);
 
-        $request->user()->update([
+        $request->user()->forceFill([
             'totp_secret' => null,
             'totp_enabled' => false,
             'totp_last_timestep' => null,
-        ]);
+        ])->save();
 
         return redirect()->route('account.security')->with('status', 'TOTP dinonaktifkan.');
     }
